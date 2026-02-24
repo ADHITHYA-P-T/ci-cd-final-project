@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: checkout
+spec:
+  params:
+    - name: repo-url
+      description: The URL of the git repo to clone
+      type: string
+    - name: branch
+      description: The branch to clone
+      type: string
+  workspaces:
+    - name: source   # <-- must match Pipeline workspace
+  steps:
+    - name: clone
+      image: bitnami/git:latest
+      script: |
+        #!/usr/bin/env sh
+        git clone --branch $(params.branch) $(params.repo-url) $(workspaces.source.path)

@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: ci-pipeline-run
+spec:
+  pipelineRef:
+    name: ci-pipeline
+  params:
+    - name: repo-url
+      value: https://github.com/ADHITHYA-P-T/ci-cd-final-project.git
+    - name: branch-name
+      value: main
+  workspaces:
+    - name: source
+      emptyDir: {}
+  taskRunTemplate:
+    serviceAccountName: pipeline

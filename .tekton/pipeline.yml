@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: ci-pipeline
+spec:
+  params:
+    - name: repo-url
+      type: string
+    - name: branch-name
+      type: string
+      default: main
+  workspaces:
+    - name: source
+  tasks:
+    - name: checkout
+      taskRef:
+        name: checkout
+      workspaces:
+        - name: source
+          workspace: source
+    - name: run-tests
+      runAfter:
+        - checkout
+      taskRef:
+        name: nose
+      workspaces:
+        - name: source
+          workspace: source
