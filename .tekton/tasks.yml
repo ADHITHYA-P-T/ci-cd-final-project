@@ -11,10 +11,49 @@ spec:
       description: The branch to clone
       type: string
   workspaces:
-    - name: source   # <-- must match Pipeline workspace
+    - name: source
   steps:
     - name: clone
       image: bitnami/git:latest
       script: |
         #!/usr/bin/env sh
         git clone --branch $(params.branch) $(params.repo-url) $(workspaces.source.path)
+
+---
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: cleanup-step
+      image: alpine:latest
+      script: |
+        #!/usr/bin/env sh
+        echo "Cleaning up workspace..."
+        rm -rf $(workspaces.source.path)/*
+
+---
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: test
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: run-tests
+      image: python:3.11  # or node:latest if using Jest
+      script: |
+        #!/usr/bin/env sh
+        cd $(workspaces.source.path)
+        # For Python nose tests
+        pip install -r requirements.txt
+        nosetests
+        # OR for Jest (JavaScript)
+        # npm install
+        # npx jest
