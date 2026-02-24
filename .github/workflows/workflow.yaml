@@ -31,4 +31,5 @@ jobs:
       - name: Run Tests
         run: |
           pip install pytest
+          export PYTHONPATH=.
           pytest
